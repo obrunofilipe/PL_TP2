@@ -1,0 +1,119 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> regra
+Rule 1     regra -> REGEX RETURN ( conteudo )
+Rule 2     conteudo -> <empty>
+Rule 3     conteudo -> elementos
+Rule 4     elementos -> STRING
+Rule 5     elementos -> conteudo , STRING
+
+Terminals, with rules where they appear
+
+(                    : 1
+)                    : 1
+,                    : 5
+REGEX                : 1
+RETURN               : 1
+STRING               : 4 5
+error                : 
+
+Nonterminals, with rules where they appear
+
+conteudo             : 1 5
+elementos            : 3
+regra                : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . regra
+    (1) regra -> . REGEX RETURN ( conteudo )
+
+    REGEX           shift and go to state 2
+
+    regra                          shift and go to state 1
+
+state 1
+
+    (0) S' -> regra .
+
+
+
+state 2
+
+    (1) regra -> REGEX . RETURN ( conteudo )
+
+    RETURN          shift and go to state 3
+
+
+state 3
+
+    (1) regra -> REGEX RETURN . ( conteudo )
+
+    (               shift and go to state 4
+
+
+state 4
+
+    (1) regra -> REGEX RETURN ( . conteudo )
+    (2) conteudo -> .
+    (3) conteudo -> . elementos
+    (4) elementos -> . STRING
+    (5) elementos -> . conteudo , STRING
+
+    )               reduce using rule 2 (conteudo -> .)
+    ,               reduce using rule 2 (conteudo -> .)
+    STRING          shift and go to state 7
+
+    conteudo                       shift and go to state 5
+    elementos                      shift and go to state 6
+
+state 5
+
+    (1) regra -> REGEX RETURN ( conteudo . )
+    (5) elementos -> conteudo . , STRING
+
+    )               shift and go to state 8
+    ,               shift and go to state 9
+
+
+state 6
+
+    (3) conteudo -> elementos .
+
+    )               reduce using rule 3 (conteudo -> elementos .)
+    ,               reduce using rule 3 (conteudo -> elementos .)
+
+
+state 7
+
+    (4) elementos -> STRING .
+
+    )               reduce using rule 4 (elementos -> STRING .)
+    ,               reduce using rule 4 (elementos -> STRING .)
+
+
+state 8
+
+    (1) regra -> REGEX RETURN ( conteudo ) .
+
+    $end            reduce using rule 1 (regra -> REGEX RETURN ( conteudo ) .)
+
+
+state 9
+
+    (5) elementos -> conteudo , . STRING
+
+    STRING          shift and go to state 10
+
+
+state 10
+
+    (5) elementos -> conteudo , STRING .
+
+    )               reduce using rule 5 (elementos -> conteudo , STRING .)
+    ,               reduce using rule 5 (elementos -> conteudo , STRING .)
+
