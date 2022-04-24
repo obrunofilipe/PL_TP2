@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = "REGEX RETURN STRINGregra : REGEX RETURN '(' conteudo ')'conteudo : conteudo : elementoselementos : STRINGelementos : conteudo ',' STRING"
+_lr_signature = "ATRIB CODIGO COMMENT ERROR EXPREG IGNORE LEXER LITERALS NEWLINE RETURN STRING TOKEN TOKENSficheiro : lexlex : LEXER conteudolexconteudolex : comandos regrascomandos : comandos : comando comandoscomando : LITERALS ATRIB STRINGcomando : IGNORE ATRIB STRINGcomando : TOKENS ATRIB listatoklistatok : '[' conteudo ']'conteudo : conteudo : tokenstokens : TOKENtokens : TOKEN ',' tokensregras : regras : regra regrasregra : EXPREG acaoacao : CODIGO"
     
-_lr_action_items = {'REGEX':([0,],[2,]),'$end':([1,8,],[0,-1,]),'RETURN':([2,],[3,]),'(':([3,],[4,]),')':([4,5,6,7,10,],[-2,8,-3,-4,-5,]),',':([4,5,6,7,10,],[-2,9,-3,-4,-5,]),'STRING':([4,9,],[7,10,]),}
+_lr_action_items = {'LEXER':([0,],[3,]),'$end':([1,2,3,4,5,6,10,11,13,17,18,19,20,21,22,27,],[0,-1,-4,-2,-14,-4,-3,-14,-5,-15,-16,-17,-6,-7,-8,-9,]),'EXPREG':([3,5,6,11,13,18,19,20,21,22,27,],[-4,12,-4,12,-5,-16,-17,-6,-7,-8,-9,]),'LITERALS':([3,6,20,21,22,27,],[7,7,-6,-7,-8,-9,]),'IGNORE':([3,6,20,21,22,27,],[8,8,-6,-7,-8,-9,]),'TOKENS':([3,6,20,21,22,27,],[9,9,-6,-7,-8,-9,]),'ATRIB':([7,8,9,],[14,15,16,]),'CODIGO':([12,],[19,]),'STRING':([14,15,],[20,21,]),'[':([16,],[23,]),']':([23,24,25,26,29,],[-10,27,-11,-12,-13,]),'TOKEN':([23,28,],[26,26,]),',':([26,],[28,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'regra':([0,],[1,]),'conteudo':([4,],[5,]),'elementos':([4,],[6,]),}
+_lr_goto_items = {'ficheiro':([0,],[1,]),'lex':([0,],[2,]),'conteudolex':([3,],[4,]),'comandos':([3,6,],[5,13,]),'comando':([3,6,],[6,6,]),'regras':([5,11,],[10,17,]),'regra':([5,11,],[11,11,]),'acao':([12,],[18,]),'listatok':([16,],[22,]),'conteudo':([23,],[24,]),'tokens':([23,28,],[25,29,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,10 +26,22 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> regra","S'",1,None,None,None),
-  ('regra -> REGEX RETURN ( conteudo )','regra',5,'p_regra','teste.py',30),
-  ('conteudo -> <empty>','conteudo',0,'p_conteudo_vazio','teste.py',33),
-  ('conteudo -> elementos','conteudo',1,'p_conteudo_elementos','teste.py',36),
-  ('elementos -> STRING','elementos',1,'p_elementos_elem','teste.py',39),
-  ('elementos -> conteudo , STRING','elementos',3,'p_elementos_varios','teste.py',42),
+  ("S' -> ficheiro","S'",1,None,None,None),
+  ('ficheiro -> lex','ficheiro',1,'p_ficheiro','main.py',113),
+  ('lex -> LEXER conteudolex','lex',2,'p_lex','main.py',116),
+  ('conteudolex -> comandos regras','conteudolex',2,'p_conteudolex','main.py',119),
+  ('comandos -> <empty>','comandos',0,'p_comandos_vazio','main.py',122),
+  ('comandos -> comando comandos','comandos',2,'p_comandos_lista','main.py',125),
+  ('comando -> LITERALS ATRIB STRING','comando',3,'p_comando_literals','main.py',128),
+  ('comando -> IGNORE ATRIB STRING','comando',3,'p_comando_ignore','main.py',131),
+  ('comando -> TOKENS ATRIB listatok','comando',3,'p_comando_tokens','main.py',134),
+  ('listatok -> [ conteudo ]','listatok',3,'p_listatok','main.py',137),
+  ('conteudo -> <empty>','conteudo',0,'p_conteudo_vazio','main.py',140),
+  ('conteudo -> tokens','conteudo',1,'p_conteudo_lista','main.py',143),
+  ('tokens -> TOKEN','tokens',1,'p_tokens_token','main.py',146),
+  ('tokens -> TOKEN , tokens','tokens',3,'p_tokens_lista','main.py',149),
+  ('regras -> <empty>','regras',0,'p_regras_vazio','main.py',153),
+  ('regras -> regra regras','regras',2,'p_regras_lista','main.py',156),
+  ('regra -> EXPREG acao','regra',2,'p_regra','main.py',159),
+  ('acao -> CODIGO','acao',1,'p_acao','main.py',163),
 ]

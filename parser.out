@@ -1,119 +1,349 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
+Unused terminals:
+
+    COMMENT
+    ERROR
+    NEWLINE
+    RETURN
+
 Grammar
 
-Rule 0     S' -> regra
-Rule 1     regra -> REGEX RETURN ( conteudo )
-Rule 2     conteudo -> <empty>
-Rule 3     conteudo -> elementos
-Rule 4     elementos -> STRING
-Rule 5     elementos -> conteudo , STRING
+Rule 0     S' -> ficheiro
+Rule 1     ficheiro -> lex
+Rule 2     lex -> LEXER conteudolex
+Rule 3     conteudolex -> comandos regras
+Rule 4     comandos -> <empty>
+Rule 5     comandos -> comando comandos
+Rule 6     comando -> LITERALS ATRIB STRING
+Rule 7     comando -> IGNORE ATRIB STRING
+Rule 8     comando -> TOKENS ATRIB listatok
+Rule 9     listatok -> [ conteudo ]
+Rule 10    conteudo -> <empty>
+Rule 11    conteudo -> tokens
+Rule 12    tokens -> TOKEN
+Rule 13    tokens -> TOKEN , tokens
+Rule 14    regras -> <empty>
+Rule 15    regras -> regra regras
+Rule 16    regra -> EXPREG acao
+Rule 17    acao -> CODIGO
 
 Terminals, with rules where they appear
 
-(                    : 1
-)                    : 1
-,                    : 5
-REGEX                : 1
-RETURN               : 1
-STRING               : 4 5
+,                    : 13
+ATRIB                : 6 7 8
+CODIGO               : 17
+COMMENT              : 
+ERROR                : 
+EXPREG               : 16
+IGNORE               : 7
+LEXER                : 2
+LITERALS             : 6
+NEWLINE              : 
+RETURN               : 
+STRING               : 6 7
+TOKEN                : 12 13
+TOKENS               : 8
+[                    : 9
+]                    : 9
 error                : 
 
 Nonterminals, with rules where they appear
 
-conteudo             : 1 5
-elementos            : 3
-regra                : 0
+acao                 : 16
+comando              : 5
+comandos             : 3 5
+conteudo             : 9
+conteudolex          : 2
+ficheiro             : 0
+lex                  : 1
+listatok             : 8
+regra                : 15
+regras               : 3 15
+tokens               : 11 13
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . regra
-    (1) regra -> . REGEX RETURN ( conteudo )
+    (0) S' -> . ficheiro
+    (1) ficheiro -> . lex
+    (2) lex -> . LEXER conteudolex
 
-    REGEX           shift and go to state 2
+    LEXER           shift and go to state 3
 
-    regra                          shift and go to state 1
+    ficheiro                       shift and go to state 1
+    lex                            shift and go to state 2
 
 state 1
 
-    (0) S' -> regra .
+    (0) S' -> ficheiro .
 
 
 
 state 2
 
-    (1) regra -> REGEX . RETURN ( conteudo )
+    (1) ficheiro -> lex .
 
-    RETURN          shift and go to state 3
+    $end            reduce using rule 1 (ficheiro -> lex .)
 
 
 state 3
 
-    (1) regra -> REGEX RETURN . ( conteudo )
+    (2) lex -> LEXER . conteudolex
+    (3) conteudolex -> . comandos regras
+    (4) comandos -> .
+    (5) comandos -> . comando comandos
+    (6) comando -> . LITERALS ATRIB STRING
+    (7) comando -> . IGNORE ATRIB STRING
+    (8) comando -> . TOKENS ATRIB listatok
 
-    (               shift and go to state 4
+    EXPREG          reduce using rule 4 (comandos -> .)
+    $end            reduce using rule 4 (comandos -> .)
+    LITERALS        shift and go to state 7
+    IGNORE          shift and go to state 8
+    TOKENS          shift and go to state 9
 
+    conteudolex                    shift and go to state 4
+    comandos                       shift and go to state 5
+    comando                        shift and go to state 6
 
 state 4
 
-    (1) regra -> REGEX RETURN ( . conteudo )
-    (2) conteudo -> .
-    (3) conteudo -> . elementos
-    (4) elementos -> . STRING
-    (5) elementos -> . conteudo , STRING
+    (2) lex -> LEXER conteudolex .
 
-    )               reduce using rule 2 (conteudo -> .)
-    ,               reduce using rule 2 (conteudo -> .)
-    STRING          shift and go to state 7
+    $end            reduce using rule 2 (lex -> LEXER conteudolex .)
 
-    conteudo                       shift and go to state 5
-    elementos                      shift and go to state 6
 
 state 5
 
-    (1) regra -> REGEX RETURN ( conteudo . )
-    (5) elementos -> conteudo . , STRING
+    (3) conteudolex -> comandos . regras
+    (14) regras -> .
+    (15) regras -> . regra regras
+    (16) regra -> . EXPREG acao
 
-    )               shift and go to state 8
-    ,               shift and go to state 9
+    $end            reduce using rule 14 (regras -> .)
+    EXPREG          shift and go to state 12
 
+    regras                         shift and go to state 10
+    regra                          shift and go to state 11
 
 state 6
 
-    (3) conteudo -> elementos .
+    (5) comandos -> comando . comandos
+    (4) comandos -> .
+    (5) comandos -> . comando comandos
+    (6) comando -> . LITERALS ATRIB STRING
+    (7) comando -> . IGNORE ATRIB STRING
+    (8) comando -> . TOKENS ATRIB listatok
 
-    )               reduce using rule 3 (conteudo -> elementos .)
-    ,               reduce using rule 3 (conteudo -> elementos .)
+    EXPREG          reduce using rule 4 (comandos -> .)
+    $end            reduce using rule 4 (comandos -> .)
+    LITERALS        shift and go to state 7
+    IGNORE          shift and go to state 8
+    TOKENS          shift and go to state 9
 
+    comando                        shift and go to state 6
+    comandos                       shift and go to state 13
 
 state 7
 
-    (4) elementos -> STRING .
+    (6) comando -> LITERALS . ATRIB STRING
 
-    )               reduce using rule 4 (elementos -> STRING .)
-    ,               reduce using rule 4 (elementos -> STRING .)
+    ATRIB           shift and go to state 14
 
 
 state 8
 
-    (1) regra -> REGEX RETURN ( conteudo ) .
+    (7) comando -> IGNORE . ATRIB STRING
 
-    $end            reduce using rule 1 (regra -> REGEX RETURN ( conteudo ) .)
+    ATRIB           shift and go to state 15
 
 
 state 9
 
-    (5) elementos -> conteudo , . STRING
+    (8) comando -> TOKENS . ATRIB listatok
 
-    STRING          shift and go to state 10
+    ATRIB           shift and go to state 16
 
 
 state 10
 
-    (5) elementos -> conteudo , STRING .
+    (3) conteudolex -> comandos regras .
 
-    )               reduce using rule 5 (elementos -> conteudo , STRING .)
-    ,               reduce using rule 5 (elementos -> conteudo , STRING .)
+    $end            reduce using rule 3 (conteudolex -> comandos regras .)
+
+
+state 11
+
+    (15) regras -> regra . regras
+    (14) regras -> .
+    (15) regras -> . regra regras
+    (16) regra -> . EXPREG acao
+
+    $end            reduce using rule 14 (regras -> .)
+    EXPREG          shift and go to state 12
+
+    regra                          shift and go to state 11
+    regras                         shift and go to state 17
+
+state 12
+
+    (16) regra -> EXPREG . acao
+    (17) acao -> . CODIGO
+
+    CODIGO          shift and go to state 19
+
+    acao                           shift and go to state 18
+
+state 13
+
+    (5) comandos -> comando comandos .
+
+    EXPREG          reduce using rule 5 (comandos -> comando comandos .)
+    $end            reduce using rule 5 (comandos -> comando comandos .)
+
+
+state 14
+
+    (6) comando -> LITERALS ATRIB . STRING
+
+    STRING          shift and go to state 20
+
+
+state 15
+
+    (7) comando -> IGNORE ATRIB . STRING
+
+    STRING          shift and go to state 21
+
+
+state 16
+
+    (8) comando -> TOKENS ATRIB . listatok
+    (9) listatok -> . [ conteudo ]
+
+    [               shift and go to state 23
+
+    listatok                       shift and go to state 22
+
+state 17
+
+    (15) regras -> regra regras .
+
+    $end            reduce using rule 15 (regras -> regra regras .)
+
+
+state 18
+
+    (16) regra -> EXPREG acao .
+
+    EXPREG          reduce using rule 16 (regra -> EXPREG acao .)
+    $end            reduce using rule 16 (regra -> EXPREG acao .)
+
+
+state 19
+
+    (17) acao -> CODIGO .
+
+    EXPREG          reduce using rule 17 (acao -> CODIGO .)
+    $end            reduce using rule 17 (acao -> CODIGO .)
+
+
+state 20
+
+    (6) comando -> LITERALS ATRIB STRING .
+
+    LITERALS        reduce using rule 6 (comando -> LITERALS ATRIB STRING .)
+    IGNORE          reduce using rule 6 (comando -> LITERALS ATRIB STRING .)
+    TOKENS          reduce using rule 6 (comando -> LITERALS ATRIB STRING .)
+    EXPREG          reduce using rule 6 (comando -> LITERALS ATRIB STRING .)
+    $end            reduce using rule 6 (comando -> LITERALS ATRIB STRING .)
+
+
+state 21
+
+    (7) comando -> IGNORE ATRIB STRING .
+
+    LITERALS        reduce using rule 7 (comando -> IGNORE ATRIB STRING .)
+    IGNORE          reduce using rule 7 (comando -> IGNORE ATRIB STRING .)
+    TOKENS          reduce using rule 7 (comando -> IGNORE ATRIB STRING .)
+    EXPREG          reduce using rule 7 (comando -> IGNORE ATRIB STRING .)
+    $end            reduce using rule 7 (comando -> IGNORE ATRIB STRING .)
+
+
+state 22
+
+    (8) comando -> TOKENS ATRIB listatok .
+
+    LITERALS        reduce using rule 8 (comando -> TOKENS ATRIB listatok .)
+    IGNORE          reduce using rule 8 (comando -> TOKENS ATRIB listatok .)
+    TOKENS          reduce using rule 8 (comando -> TOKENS ATRIB listatok .)
+    EXPREG          reduce using rule 8 (comando -> TOKENS ATRIB listatok .)
+    $end            reduce using rule 8 (comando -> TOKENS ATRIB listatok .)
+
+
+state 23
+
+    (9) listatok -> [ . conteudo ]
+    (10) conteudo -> .
+    (11) conteudo -> . tokens
+    (12) tokens -> . TOKEN
+    (13) tokens -> . TOKEN , tokens
+
+    ]               reduce using rule 10 (conteudo -> .)
+    TOKEN           shift and go to state 26
+
+    conteudo                       shift and go to state 24
+    tokens                         shift and go to state 25
+
+state 24
+
+    (9) listatok -> [ conteudo . ]
+
+    ]               shift and go to state 27
+
+
+state 25
+
+    (11) conteudo -> tokens .
+
+    ]               reduce using rule 11 (conteudo -> tokens .)
+
+
+state 26
+
+    (12) tokens -> TOKEN .
+    (13) tokens -> TOKEN . , tokens
+
+    ]               reduce using rule 12 (tokens -> TOKEN .)
+    ,               shift and go to state 28
+
+
+state 27
+
+    (9) listatok -> [ conteudo ] .
+
+    LITERALS        reduce using rule 9 (listatok -> [ conteudo ] .)
+    IGNORE          reduce using rule 9 (listatok -> [ conteudo ] .)
+    TOKENS          reduce using rule 9 (listatok -> [ conteudo ] .)
+    EXPREG          reduce using rule 9 (listatok -> [ conteudo ] .)
+    $end            reduce using rule 9 (listatok -> [ conteudo ] .)
+
+
+state 28
+
+    (13) tokens -> TOKEN , . tokens
+    (12) tokens -> . TOKEN
+    (13) tokens -> . TOKEN , tokens
+
+    TOKEN           shift and go to state 26
+
+    tokens                         shift and go to state 29
+
+state 29
+
+    (13) tokens -> TOKEN , tokens .
+
+    ]               reduce using rule 13 (tokens -> TOKEN , tokens .)
 

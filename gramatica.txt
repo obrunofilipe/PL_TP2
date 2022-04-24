@@ -1,0 +1,33 @@
+ficheiro : lex
+
+lex : LEXER conteudolex
+
+conteudolex : comandos regras
+
+comandos : 
+comandos : comando comandos
+
+comando : LITERALS ATRIB STRING
+comando : IGNORE ATRIB STRING
+comando : TOKENS ATRIB listatok
+
+listatok : '[' conteudo ']'
+
+conteudo : 
+conteudo : tokens
+
+tokens : TOKEN
+tokens : TOKEN ',' tokens
+
+regras : 
+regras : regra regras
+
+regra : EXPREG acao
+
+acao : CODIGO
+
+
+
+
+
+
