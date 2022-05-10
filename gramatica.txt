@@ -1,4 +1,4 @@
-ficheiro : lex
+ficheiro : lex yacc
 
 lex : LEXER conteudolex
 
@@ -24,10 +24,28 @@ regras : regra regras
 
 regra : EXPREG acao
 
-acao : CODIGO
+acao : RETURN
+acao : ERROR 
 
 
+yacc : YACC conteudoyacc
 
+conteudoyacc : precedence variables producoes
+
+precedence : PRECEDENCE '=' '[' tuplos ']'
+
+tuplos : 
+tuplos : tuplos ',' TUPLO
+
+variables : 
+variables : variables variable
+
+variable : ID '=' VALOR
+
+producoes : 
+producoes : producoes producao
+
+producao : REGRAGRAM CODIGO
 
 
 
