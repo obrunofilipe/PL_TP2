@@ -12,7 +12,7 @@ YACC
 %precedence = [
     ('left','+','-'),
     ('left','*','/'),
-    ('right','UMINUS'),
+    ('right','UMINUS')
 ]
 
 %vars

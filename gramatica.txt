@@ -1,4 +1,4 @@
-ficheiro : lex yacc
+ficheiro : lex yacc RESTO 
 
 lex : LEXER conteudolex
 
@@ -30,12 +30,17 @@ acao : ERROR
 
 yacc : YACC conteudoyacc
 
-conteudoyacc : precedence variables producoes
+conteudoyacc : precedence VARS variables GRAMMAR producoes
 
-precedence : PRECEDENCE '=' '[' tuplos ']'
+precedence : PRECEDENCE '=' '[' lista ']'
 
-tuplos : 
-tuplos : tuplos ',' TUPLO
+lista : 
+lista : tuplos
+
+tuplos : TUPLO tuplos2
+
+tuplos2 : 
+tuplos2 : ',' TUPLO tuplos2
 
 variables : 
 variables : variables variable

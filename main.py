@@ -22,14 +22,15 @@ literals = {'[',']',',','='}
 
 tokens = ["LEXER","YACC","LITERALS","IGNORE","TOKENS","EXPREG","STRING","COMMENT","NEWLINE",
           "RETURN","ERROR","TOKEN","ATRIB","PRECEDENCE","TUPLO","ID","VALOR","REGRAGRAM","CODIGO",
-          "GRAMMAR", "ENDGRAMMAR","RESTO"]
+          "GRAMMAR", "ENDGRAMMAR","RESTO","VARS"]
 
 states = [
     ("lexer", "exclusive"),
     ("tokens", "exclusive"),
     ("regex", "exclusive"),
     ("yacc", "exclusive"),
-    ("grammar", "exclusive")
+    ("grammar", "exclusive"),
+    ("vars","exclusive")
 ]
 
 
@@ -99,6 +100,23 @@ def t_lexer_EXPREG(t):
     return t
 
 
+#vars state
+
+def t_vars_GRAMMAR(t):
+    r"%grammar"
+    lexer.pop_state()
+    lexer.push_state("grammar")
+    return t
+
+def t_vars_ID(t):
+    r"[a-zA-Z]+"
+    return t
+
+def t_vars_VALOR(t):
+    r"[^\n=]+"
+    return t
+
+
 #grammar state
 
 def t_grammar_REGRAGRAM(t):
@@ -114,6 +132,7 @@ def t_grammar_ENDGRAMMAR(t):
     lexer.pop_state()
     lexer.pop_state()
 
+
 #yacc
 
 
@@ -126,18 +145,11 @@ def t_yacc_TUPLO(t):
     r"\(('right'|'left'|'nonassoc'),(\'(\w+|[^A-Za-z,'])\'(,)?)+\)"
     return t
 
-def t_yacc_GRAMMAR(t):
-    r"%grammar"
-    lexer.push_state("grammar")
+def t_yacc_VARS(t):
+    "%vars"
+    lexer.push_state("vars")
     return t
 
-def t_yacc_ID(t):
-    r"[a-zA-Z]+"
-    return t
-
-def t_yacc_VALOR(t):
-    r"[^\n=]+"
-    return t
 
 
 #INITIAL
@@ -158,6 +170,7 @@ t_regex_ignore = " \t\r"
 t_lexer_ignore = " \n\t\r"
 t_yacc_ignore = " \n\t\r"
 t_grammar_ignore = " \n\t\r"
+t_vars_ignore = " \n\t\r"
 t_ignore = " \n\t\r"
 
 #error
@@ -171,16 +184,16 @@ content = f.read()
 
 lexer = lex.lex()
 
-lexer.input(content)
-for tok in lexer:
-    print(tok)
+#lexer.input(content)
+#for tok in lexer:
+#    print(tok)
 
 
 
 #gramática ficheiro
 
 def p_ficheiro(p):
-    "ficheiro : lex yacc"
+    "ficheiro : lex yacc RESTO"
 
 #gramática lex
 
@@ -238,19 +251,30 @@ def p_acao_error(p):
 #gramática yacc
 
 def p_yacc(p):
-    "yacc : YACC coteudoyacc"
+    "yacc : YACC conteudoyacc"
 
 def p_conteudoyacc(p):
-    "conteudoyacc : precedence variables producoes"
+    "conteudoyacc : precedence VARS variables GRAMMAR producoes"
 
 def p_precedence(p):
-    "precedence : PRECEDENCE '=' '[' tuplos ']'"
+    "precedence : PRECEDENCE '=' '[' lista ']'"
 
-def p_tuplos_vazio(p):
-    "tuplos : "
 
-def p_tuplos_varios(p):
-    "tuplos : tuplos ',' TUPLO"
+def p_lista_vazio(p):
+    "lista : "
+
+def p_lista_varios(p):
+    "lista : tuplos"
+
+def p_tuplos(p):
+    "tuplos : TUPLO tuplos2"
+
+def p_tuplos2_vazio(p):
+    "tuplos2 : "
+
+def p_tuplos2_varios(p):
+    "tuplos2 : ',' TUPLO tuplos2"
+
 
 def p_variables_vazio(p):
     "variables : "
@@ -273,7 +297,7 @@ def p_producao(p):
 
 
 def p_error(p):
-    print("Syntax Error in:", p.value)
+    print("Syntax Error in:", p.value, p.lexpos)
 
 
 parser = yacc.yacc()
@@ -281,5 +305,4 @@ parser = yacc.yacc()
 f = open("test.txt")
 
 content = f.read()
-
-#parser.parse(content)
+parser.parse(content)
