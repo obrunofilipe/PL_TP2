@@ -1,5 +1,5 @@
 LEX
-%literals   = "+-/*=()"
+%literals   = "+-/*=()"               ## a single char
 %ignore     = " \t\n"
 %tokens     = [ 'VAR','NUMBER' ]
 
@@ -21,16 +21,16 @@ ts = { }
 
 %grammar
 
-stat : VAR '=' exp             { ts[t[1]] = t[3] }
-stat : exp                     { print(t[1]) }
-exp : exp '+' exp              { t[0] = t[1] + t[3] }
-exp : exp '-' exp              { t[0] = t[1] - t[3] }
-exp : exp '*' exp              { t[0] = t[1] * t[3] }
-exp : exp '/' exp              { t[0] = t[1] / t[3] }
-exp : '-' exp %prec UMINUS     { t[0] = -t[2] }
-exp : '(' exp ')'              { t[0] = t[2] }
-exp : NUMBER                   { t[0] = t[1] }
-exp : VAR                      { t[0] = getval(t[1]) }
+stat : VAR '=' exp { ts[t[1]] = t[3] }
+stat : exp { print(t[1]) }
+exp : exp '+' exp { t[0] = t[1] + t[3] }
+exp : exp '-' exp { t[0] = t[1] - t[3] }
+exp : exp '*' exp { t[0] = t[1] * t[3] }
+exp : exp '/' exp { t[0] = t[1] / t[3] }
+exp : '-' exp %prec UMINUS { t[0] = -t[2] }
+exp : '(' exp ')' { t[0] = t[2] }
+exp : NUMBER { t[0] = t[1] }
+exp : VAR { t[0] = getval(t[1]) }
 
 
 %%
@@ -41,5 +41,5 @@ def getval(n):
     if n not in ts: print(f"Undefined name '{n}'")
     return ts.get(n,0)
 
-y=yacc()
+y=yacc.yacc()
 y.parse("3+4*7")
