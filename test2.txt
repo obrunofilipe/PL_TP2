@@ -1,0 +1,56 @@
+LEX
+%literals = "[],"
+%tokens = ['NUM', 'PAL']
+%ignore = " \n\t\r"
+
+[a-zA-Z]+        return('PAL', t.value)
+\d+              return('NUM', int(t.value))
+.                error(f"Illegal character '{t.value[0]}', [{t.lexer.lineno}]", t.lexer.skip(1) )
+
+
+
+YACC
+%vars
+%grammar
+
+
+lista : '[' conteudo ']' {t[0] = t[2]}
+
+
+conteudo :  { t[0] = [] }
+
+
+conteudo : elementos { t[0] = t[1] }
+
+elementos : elem { t[0] = [t[1]] }
+
+elementos : elementos ',' elem { t[0] = [t[3]] + t[1] }
+
+elem : NUM{
+    t.parser.soma += t[1]
+    t[0] = t[1]
+}
+    
+elem : PAL { 
+    print("Palavra:", t[1]) 
+    t[0] = t[1]
+}
+
+elem : lista { t[0] = t[1] }
+
+%%
+
+def p_error(t):
+    print("Syntax error!")
+
+parser = yacc.yacc() # analisador sintático bottom-up
+
+
+import sys
+
+for line in sys.stdin:
+    parser.soma = 0
+    res = parser.parse(line)
+    print("Soma:", parser.soma)
+
+    print("Lista:", res)

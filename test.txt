@@ -22,7 +22,12 @@ ts = { }
 %grammar
 
 stat : VAR '=' exp { ts[t[1]] = t[3] }
-stat : exp { print(t[1]) }
+stat : exp { 
+    print(t[1]) 
+    print("hello")
+    for char in "ola":
+        print(char)
+    }
 exp : exp '+' exp { t[0] = t[1] + t[3] }
 exp : exp '-' exp { t[0] = t[1] - t[3] }
 exp : exp '*' exp { t[0] = t[1] * t[3] }

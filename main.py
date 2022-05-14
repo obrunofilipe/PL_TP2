@@ -2,22 +2,6 @@ import re
 import ply.lex as lex
 import ply.yacc as yacc
 
-def split(word):
-    return [char for char in word]
-
-def listToString(list):
-    ret = ""
-    i = 0
-    for elem in list:
-        if i == 0:
-            ret = ret + elem + "\"" + ", "
-        if i != len(list)-1:
-            ret = ret + "\"" + elem + "\"" + ", "
-        elif i == len(list)-1:
-            ret = ret + "\"" + elem
-        i += 1
-    return ret
-
 literals = {'[',']',',','='}
 
 tokens = ["LEXER","YACC","LITERALS","IGNORE","TOKENS","EXPREG","STRING","COMM","NEWLINE",
@@ -105,10 +89,6 @@ def t_lexer_TOKENS(t):
     lexer.push_state("tokens")
     return t
 
-def t_lexer_COMMENT(t):
-    r"\#\#[^\n]+$"
-    return t
-
 def t_lexer_EXPREG(t):
     r'(\\\s|\S)+'
     lexer.push_state("regex")
@@ -139,7 +119,7 @@ def t_grammar_REGRAGRAM(t):
     return t
 
 def t_grammar_CODIGO(t):
-    r"\{.*\}"
+    r"\{[^}]+\}"
     return t
 
 def t_grammar_ENDGRAMMAR(t):
@@ -195,7 +175,7 @@ t_ignore = " \n\t\r"
 def t_ANY_error(t):
     print("Illegal character!", t.value)
 
-f = open("test.txt")
+f = open("test2.txt")
 
 content = f.read()
 
@@ -237,7 +217,7 @@ def p_comando_literals(p):
 
 def p_comando_ignore(p):
     "comando : IGNORE ATRIB STRING"
-    p[0] = p[1].replace("%", "") + p[2] + p[3]
+    p[0] = p[1].replace("%", "t_") + p[2] + p[3]
 
 def p_comando_tokens(p):
     "comando : TOKENS ATRIB listatok"
@@ -274,19 +254,26 @@ def p_regras_lista(p):
 def p_regra(p):
     "regra : EXPREG acao"
     tmp = p[2].split('%')
-    value = tmp[1].split(',')
-    p[0] = tmp[0] + "r'" + p[1] + "'" + "\n\t" + "t.value=" + value[1][:-1] + "\n\treturn t" + "\n\n"
+    pattern = re.compile(r'def t_error')
+    mo = pattern.search(tmp[0])
+    if mo:
+        p[0] = tmp[0] + "r'" + p[1] + "'\n\t" + tmp[1] + "\n\n"
+    else:
+        value = tmp[1].split(',')
+        p[0] = tmp[0] + "r'" + p[1] + "'" + "\n\t" + "t.value=" + value[1][:-1] + "\n\treturn t" + "\n\n"
 
 def p_acao_return(p):
     "acao : RETURN"
     pattern = re.compile(r'return\(\'([a-zA-Z]+)\'')
     mo = pattern.search(p[1])
+    print(mo)
     token = mo.group(1)
     p[0] = "def t_" + token + "(t):\n\t" + "%" + p[1]
 
 def p_acao_error(p):
     "acao : ERROR"
     p[0] = "def t_error(t):\n\t" + "%" + p[1].replace("error","print")
+    print(p[0])
     
 
 #gramática yacc
@@ -299,7 +286,11 @@ def p_conteudoyacc(p):
     "conteudoyacc : precedence VARS variables GRAMMAR producoes"
     p[0] = p[1] + p[3] + p[5]
 
-def p_precedence(p):
+def p_precedence_vazio(p):
+    "precedence : "
+    p[0] = ""
+
+def p_precedence_lista(p):
     "precedence : PRECEDENCE '=' '[' lista ']'"
     p[0] = p[1].replace("%", "") + p[2] + p[3] + "\n" + p[4] + "\n" + p[5] + "\n\n"
 
@@ -351,7 +342,8 @@ def p_producao(p):
   
     regra = p[2].replace("{", "")
     regra = regra.replace("}","")
-    regra = regra.replace(" ", "")
+    regra = regra.replace("    ","\t")
+    regra = regra.lstrip()
     p[0] = "def p_" + funcname.replace(" ", "") + "_" + str(p.parser.count) + "(t):\n\t"+ "\"" + p[1] +"\"" +"\n\t"+ regra + "\n\n"
     p.parser.count += 1
 
@@ -362,7 +354,7 @@ def p_error(p):
 parser = yacc.yacc()
 parser.count = 0
 
-f = open("test.txt")
+f = open("test2.txt")
 
 content = f.read()
 f = open("output.py", "w")

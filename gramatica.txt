@@ -1,4 +1,4 @@
-ficheiro : lex yacc RESTO 
+ficheiro : lex yacc RESTO
 
 lex : LEXER conteudolex
 
