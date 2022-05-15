@@ -3,6 +3,7 @@ LEX
 %tokens = ['NUM', 'PAL']
 %ignore = " \n\t\r"
 
+
 [a-zA-Z]+        return('PAL', t.value)
 \d+              return('NUM', int(t.value))
 .                error(f"Illegal character '{t.value[0]}', [{t.lexer.lineno}]", t.lexer.skip(1) )

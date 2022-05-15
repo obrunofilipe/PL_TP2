@@ -1,0 +1,51 @@
+LEX
+
+%tokens = ['INT']
+
+%literals = "+-*/()"
+
+%ignore = " \n\t\r"
+
+\d+    return('INT', int(t.value))
+.      error("Illegal character")
+
+
+YACC
+
+%vars
+
+%grammar
+
+exp : aexp              { t[0] = t[1] }
+
+aexp : termo            { t[0] = t[1] }
+
+aexp : aexp '+' termo   { t[0] = t[1] + t[3]}
+
+aexp : aexp '-' termo   { t[0] = t[1] - t[3]}
+
+termo : fator           { t[0] = t[1]}
+
+termo : termo '*' fator { t[0] = t[1] * t[3]}
+
+termo : termo '/' fator { t[0] = t[1] // t[3]}
+
+fator : INT             { t[0] = t[1] }
+
+fator : '(' aexp ')'    { t[0] = t[2]}
+
+
+
+%%
+
+def p_error(p):
+    print("Syntax error!")
+
+
+parser = yacc.yacc()
+
+import sys
+
+for line in sys.stdin:
+    res = parser.parse(line)
+    print("Resultado:", res)
